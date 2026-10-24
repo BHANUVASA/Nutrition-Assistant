@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrition Assistant</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar styling for list view */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen pb-12 antialiased">
+
+    <!-- Navigation / Header -->
+    <header class="bg-emerald-600 text-white shadow-md">
+        <div class="max-w-6xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-emerald-500 rounded-xl shadow-inner">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight">Nutrition Assistant</h1>
+                    <p class="text-emerald-100 text-sm">Smart Daily Calorie & Macro Tracker</p>
+                </div>
+            </div>
+            
+            <button id="clear-all-btn" class="text-xs bg-emerald-700 hover:bg-emerald-800 text-emerald-100 font-medium py-2 px-3.5 rounded-lg transition duration-200 border border-emerald-500/40 flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                Reset Day Data
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 mt-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+        <!-- Left Column: Dashboard Stats & Form -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- Summary Cards / Targets -->
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-slate-800">Daily Goal Progress</h2>
+                    <span class="text-xs font-semibold px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-full border border-emerald-200">Target Based</span>
+                </div>
+
+                <!-- Metric Cards Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <!-- Calories -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-1">Calories</span>
+                        <span id="stat-calories" class="text-xl font-extrabold text-slate-800">0</span>
+                        <span class="text-[11px] text-slate-400 block mt-0.5">/ 2000 kcal</span>
+                    </div>
+                    <!-- Protein -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-1">Protein</span>
+                        <span id="stat-protein" class="text-xl font-extrabold text-blue-600">0g</span>
+                        <span class="text-[11px] text-slate-400 block mt-0.5">/ 150g</span>
+                    </div>
+                    <!-- Carbs -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-1">Carbs</span>
+                        <span id="stat-carbs" class="text-xl font-extrabold text-amber-600">0g</span>
+                        <span class="text-[11px] text-slate-400 block mt-0.5">/ 250g</span>
+                    </div>
+                    <!-- Fats -->
+                    <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-100 text-center">
+                        <span class="text-xs font-medium text-slate-500 uppercase tracking-wider block mb-1">Fats</span>
+                        <span id="stat-fat" class="text-xl font-extrabold text-rose-500">0g</span>
+                        <span class="text-[11px] text-slate-400 block mt-0.5">/ 65g</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bars -->
+                <div class="space-y-3">
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Calories Intake</span>
+                            <span id="bar-calories-label">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div id="bar-calories" class="bg-emerald-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Protein Goal</span>
+                            <span id="bar-protein-label">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div id="bar-protein" class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Carbohydrates Goal</span>
+                            <span id="bar-carbs-label">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div id="bar-carbs" class="bg-amber-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-medium text-slate-600 mb-1">
+                            <span>Fats Goal</span>
+                            <span id="bar-fat-label">0%</span>
+                        </div>
+                        <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                            <div id="bar-fat" class="bg-rose-500 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Meal Entry Form -->
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-lg font-bold text-slate-800">Log a Meal</h2>
+                    <span class="text-xs text-slate-400">Custom entry or quick add</span>
+                </div>
+
+                <!-- Quick Food Suggestions -->
+                <div class="mb-5">
+                    <p class="text-xs font-semibold text-slate-500 mb-2">Quick Pre-loaded Suggestions:</p>
+                    <div id="quick-presets" class="flex flex-wrap gap-2">
+                        <!-- Populated dynamically -->
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <form id="meal-form" class="space-y-4">
+                    <div>
+                        <label for="food-name" class="block text-xs font-medium text-slate-600 mb-1">Food Name</label>
+                        <input type="text" id="food-name" placeholder="e.g. Oatmeal with Berries" required 
+                            class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm transition">
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label for="category" class="block text-xs font-medium text-slate-600 mb-1">Category</label>
+                            <select id="category" class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition">
+                                <option value="Breakfast">Breakfast</option>
+                                <option value="Lunch">Lunch</option>
+                                <option value="Dinner">Dinner</option>
+                                <option value="Snack">Snack</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="calories" class="block text-xs font-medium text-slate-600 mb-1">Calories (kcal)</label>
+                            <input type="number" id="calories" placeholder="0" min="0" required
+                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition">
+                        </div>
+                        <div>
+                            <label for="protein" class="block text-xs font-medium text-slate-600 mb-1">Protein (g)</label>
+                            <input type="number" id="protein" placeholder="0" min="0" step="0.1" required
+                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition">
+                        </div>
+                        <div>
+                            <label for="carbs" class="block text-xs font-medium text-slate-600 mb-1">Carbs (g)</label>
+                            <input type="number" id="carbs" placeholder="0" min="0" step="0.1" required
+                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition">
+                        </div>
+                        <div>
+                            <label for="fat" class="block text-xs font-medium text-slate-600 mb-1">Fat (g)</label>
+                            <input type="number" id="fat" placeholder="0" min="0" step="0.1" required
+                                class="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold rounded-xl shadow-md shadow-emerald-600/20 transition duration-200 flex justify-center items-center gap-2 text-sm mt-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        Add to Food Log
+                    </button>
+                </form>
+            </section>
+        </div>
+
+        <!-- Right Column: Meal Log & Category Filtering -->
+        <div class="lg:col-span-5 space-y-6">
+            <section class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200/80 h-full flex flex-col">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <h2 class="text-lg font-bold text-slate-800">Today's Meals</h2>
+                    
+                    <!-- Filter Buttons -->
+                    <div id="filter-container" class="flex flex-wrap gap-1 bg-slate-100 p-1 rounded-xl text-xs font-medium">
+                        <button data-filter="All" class="filter-btn active-filter px-2.5 py-1 rounded-lg bg-white shadow-sm text-slate-800 font-semibold transition">All</button>
+                        <button data-filter="Breakfast" class="filter-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-800 transition">Bfast</button>
+                        <button data-filter="Lunch" class="filter-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-800 transition">Lunch</button>
+                        <button data-filter="Dinner" class="filter-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-800 transition">Dinner</button>
+                        <button data-filter="Snack" class="filter-btn px-2.5 py-1 rounded-lg text-slate-500 hover:text-slate-800 transition">Snack</button>
+                    </div>
+                </div>
+
+                <!-- Meal List Display -->
+                <div class="flex-1 overflow-y-auto max-h-[520px] pr-1">
+                    <ul id="meal-list" class="space-y-3">
+                        <!-- Items rendered via JS -->
+                    </ul>
+
+                    <!-- Empty state -->
+                    <div id="empty-state" class="hidden text-center py-12">
+                        <div class="inline-flex p-3 bg-slate-100 rounded-full text-slate-400 mb-3">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                        </div>
+                        <p class="text-sm font-medium text-slate-600">No meals logged yet</p>
+                        <p class="text-xs text-slate-400 mt-1">Select a quick suggestion or fill out the form above.</p>
+                    </div>
+                </div>
+
+            </section>
+        </div>
+
+    </main>
+
+    <script>
+        // Target Nutrition Goals
+        const TARGETS = {
+            calories: 2000,
+            protein: 150,
+            carbs: 250,
+            fat: 65
+        };
+
+        // Preset Quick Food Items
+        const PRESETS = [
+            { name: 'Oatmeal & Banana', category: 'Breakfast', calories: 350, protein: 12, carbs: 62, fat: 6 },
+            { name: 'Grilled Chicken Salad', category: 'Lunch', calories: 420, protein: 45, carbs: 18, fat: 14 },
+            { name: 'Greek Yogurt & Honey', category: 'Snack', calories: 180, protein: 18, carbs: 20, fat: 2 },
+            { name: 'Salmon & Quinoa Bowl', category: 'Dinner', calories: 580, protein: 42, carbs: 48, fat: 22 },
+            { name: 'Protein Shake', category: 'Snack', calories: 210, protein: 30, carbs: 8, fat: 3 }
+        ];
+
+        // State
+        let meals = JSON.parse(localStorage.getItem('nutrition_assistant_meals')) || [];
+        let currentFilter = 'All';
+
+        // DOM Elements
+        const mealForm = document.getElementById('meal-form');
+        const mealList = document.getElementById('meal-list');
+        const emptyState = document.getElementById('empty-state');
+        const quickPresetsContainer = document.getElementById('quick-presets');
+        const filterContainer = document.getElementById('filter-container');
+        const clearAllBtn = document.getElementById('clear-all-btn');
+
+        // Stats Elements
+        const statCalories = document.getElementById('stat-calories');
+        const statProtein = document.getElementById('stat-protein');
+        const statCarbs = document.getElementById('stat-carbs');
+        const statFat = document.getElementById('stat-fat');
+
+        // Progress Bar Elements
+        const barCalories = document.getElementById('bar-calories');
+        const barProtein = document.getElementById('bar-protein');
+        const barCarbs = document.getElementById('bar-carbs');
+        const barFat = document.getElementById('bar-fat');
+
+        const barCaloriesLabel = document.getElementById('bar-calories-label');
+        const barProteinLabel = document.getElementById('bar-protein-label');
+        const barCarbsLabel = document.getElementById('bar-carbs-label');
+        const barFatLabel = document.getElementById('bar-fat-label');
+
+        // Initialize App
+        function init() {
+            renderPresets();
+            renderUI();
+            setupEventListeners();
+        }
+
+        // Render Quick Presets Buttons
+        function renderPresets() {
+            quickPresetsContainer.innerHTML = '';
+            PRESETS.forEach(item => {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.className = 'text-xs bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-300 text-slate-700 py-1.5 px-3 rounded-lg border border-slate-200 transition';
+                button.innerHTML = `<strong>+</strong> ${item.name}`;
+                button.addEventListener('click', () => {
+                    addMeal({
+                        id: Date.now(),
+                        ...item
+                    });
+                });
+                quickPresetsContainer.appendChild(button);
+            });
+        }
+
+        // Add Meal to State & LocalStorage
+        function addMeal(meal) {
+            meals.unshift(meal);
+            saveToLocalStorage();
+            renderUI();
+        }
+
+        // Delete Meal from State
+        function deleteMeal(id) {
+            meals = meals.filter(m => m.id !== id);
+            saveToLocalStorage();
+            renderUI();
+        }
+
+        // Save State
+        function saveToLocalStorage() {
+            localStorage.setItem('nutrition_assistant_meals', JSON.stringify(meals));
+        }
+
+        // Main UI Render Function
+        function renderUI() {
+            // 1. Calculate Totals
+            const totals = meals.reduce((acc, m) => {
+                acc.calories += Number(m.calories) || 0;
+                acc.protein += Number(m.protein) || 0;
+                acc.carbs += Number(m.carbs) || 0;
+                acc.fat += Number(m.fat) || 0;
+                return acc;
+            }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+
+            // 2. Update Metric Numbers
+            statCalories.textContent = totals.calories;
+            statProtein.textContent = `${totals.protein.toFixed(1)}g`;
+            statCarbs.textContent = `${totals.carbs.toFixed(1)}g`;
+            statFat.textContent = `${totals.fat.toFixed(1)}g`;
+
+            // 3. Update Progress Bars
+            updateProgressBar(barCalories, barCaloriesLabel, totals.calories, TARGETS.calories);
+            updateProgressBar(barProtein, barProteinLabel, totals.protein, TARGETS.protein);
+            updateProgressBar(barCarbs, barCarbsLabel, totals.carbs, TARGETS.carbs);
+            updateProgressBar(barFat, barFatLabel, totals.fat, TARGETS.fat);
+
+            // 4. Render Logged Meals
+            const filteredMeals = currentFilter === 'All' 
+                ? meals 
+                : meals.filter(m => m.category === currentFilter);
+
+            mealList.innerHTML = '';
+
+            if (filteredMeals.length === 0) {
+                emptyState.classList.remove('hidden');
+            } else {
+                emptyState.classList.add('hidden');
+                filteredMeals.forEach(meal => {
+                    const li = document.createElement('li');
+                    li.className = 'bg-slate-50 border border-slate-200/80 rounded-xl p-3.5 flex justify-between items-center hover:bg-slate-100/60 transition';
+                    
+                    const badgeColors = {
+                        Breakfast: 'bg-amber-100 text-amber-800 border-amber-200',
+                        Lunch: 'bg-blue-100 text-blue-800 border-blue-200',
+                        Dinner: 'bg-purple-100 text-purple-800 border-purple-200',
+                        Snack: 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                    };
+
+                    li.innerHTML = `
+                        <div class="space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-md border ${badgeColors[meal.category] || 'bg-slate-200 text-slate-700'}">
+                                    ${meal.category}
+                                </span>
+                                <h3 class="text-sm font-bold text-slate-800">${escapeHtml(meal.name)}</h3>
+                            </div>
+                            <div class="text-xs text-slate-500 space-x-2">
+                                <span class="font-medium text-slate-700">${meal.calories} kcal</span>
+                                <span>•</span>
+                                <span>P: ${meal.protein}g</span>
+                                <span>C: ${meal.carbs}g</span>
+                                <span>F: ${meal.fat}g</span>
+                            </div>
+                        </div>
+                        <button onclick="deleteMeal(${meal.id})" class="text-slate-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-rose-50 transition" title="Delete meal">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    `;
+                    mealList.appendChild(li);
+                });
+            }
+        }
+
+        // Progress Bar Helper
+        function updateProgressBar(barEl, labelEl, value, max) {
+            const percentage = Math.min(Math.round((value / max) * 100), 100);
+            barEl.style.width = `${percentage}%`;
+            labelEl.textContent = `${percentage}%`;
+        }
+
+        // Helper to escape HTML strings
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, (m) => {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        // Event Listeners
+        function setupEventListeners() {
+            // Form Submit
+            mealForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newMeal = {
+                    id: Date.now(),
+                    name: document.getElementById('food-name').value.trim(),
+                    category: document.getElementById('category').value,
+                    calories: parseFloat(document.getElementById('calories').value) || 0,
+                    protein: parseFloat(document.getElementById('protein').value) || 0,
+                    carbs: parseFloat(document.getElementById('carbs').value) || 0,
+                    fat: parseFloat(document.getElementById('fat').value) || 0
+                };
+
+                addMeal(newMeal);
+                mealForm.reset();
+            });
+
+            // Filter Buttons
+            filterContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('filter-btn')) {
+                    document.querySelectorAll('.filter-btn').forEach(btn => {
+                        btn.classList.remove('bg-white', 'shadow-sm', 'text-slate-800', 'font-semibold');
+                        btn.classList.add('text-slate-500');
+                    });
+
+                    e.target.classList.add('bg-white', 'shadow-sm', 'text-slate-800', 'font-semibold');
+                    e.target.classList.remove('text-slate-500');
+
+                    currentFilter = e.target.dataset.filter;
+                    renderUI();
+                }
+            });
+
+            // Reset Day Button
+            clearAllBtn.addEventListener('click', () => {
+                if (meals.length === 0) return;
+                meals = [];
+                saveToLocalStorage();
+                renderUI();
+            });
+        }
+
+        // Global Delete Function for Inline Handler
+        window.deleteMeal = deleteMeal;
+
+        // Run Application
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
